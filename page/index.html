@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>oracle-diagnostic-lite — onde o seu negócio trava de verdade</title>
+<meta name="description" content="Skill do Claude que roda 3–5 perguntas e devolve a leitura de superfície do Creative Oracle™: aponta qual das quatro frentes — posicionamento, presença, conversão, operação — concentra a tensão. Localiza o nó. Não prescreve. A porta de entrada gratuita do Oracle.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="oracle-diagnostic-lite — onde o seu negócio trava de verdade">
+<meta property="og:description" content="Skill do Claude: 3–5 perguntas e a leitura de superfície do Creative Oracle™. Aponta qual das quatro frentes concentra a tensão. Localiza o nó, não prescreve. A entrada gratuita do Oracle.">
+<meta property="og:image" content="https://raw.githubusercontent.com/1marcelserrano/oracle-diagnostic-lite/main/assets/social-preview.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="oracle-diagnostic-lite — onde o seu negócio trava de verdade">
+<meta name="twitter:description" content="3–5 perguntas e a leitura de superfície do Creative Oracle™. Aponta qual das quatro frentes concentra a tensão. Localiza o nó, não prescreve.">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/1marcelserrano/oracle-diagnostic-lite/main/assets/social-preview.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,900&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Libre+Caslon+Text:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-start:#0A0A0E; --bg-end:#111114;
+    --surface:#15151A; --surface-2:#1C1C22;
+    --line:rgba(255,255,255,0.06);
+    --grid:rgba(255,255,255,0.025);
+    --headline:#F0EEE6; --ink:#E4E1D6; --ink-soft:#9A968C;
+    --accent:#B4C636; --accent-2:#6A7820;
+    --radius-sm:2px; --radius-md:4px;
+    --maxw:760px;
+    --serif:"Libre Caslon Text",Georgia,serif;
+    --sans:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:"IBM Plex Mono","Space Mono",monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; color:var(--ink); font-family:var(--sans); font-weight:300;
+    font-size:17px; line-height:1.7;
+    background-image:
+      linear-gradient(var(--grid) 1px,transparent 1px),
+      linear-gradient(90deg,var(--grid) 1px,transparent 1px),
+      linear-gradient(160deg,var(--bg-start),var(--bg-end));
+    background-size:54px 54px,54px 54px,100% 100%;
+    background-attachment:fixed;
+  }
+  #progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--accent);z-index:100;transition:width .1s linear;}
+  .wrap{display:flex;max-width:1100px;margin:0 auto;gap:40px;padding:0 24px;}
+  nav.toc{position:sticky;top:0;align-self:flex-start;height:100vh;padding:48px 0;width:230px;flex-shrink:0;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;}
+  nav.toc ol{list-style:none;margin:0;padding:0;}
+  nav.toc li{margin:0 0 14px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;display:block;padding-left:14px;border-left:1px solid var(--line);transition:.2s;}
+  nav.toc a:hover,nav.toc a.active{color:var(--accent);border-left-color:var(--accent);}
+  main{flex:1;min-width:0;max-width:var(--maxw);padding:48px 0 120px;}
+  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:var(--accent);margin:0 0 16px;}
+  h1{font-family:'Fraunces',var(--serif);font-weight:900;font-size:clamp(46px,8.5vw,96px);line-height:.94;color:var(--headline);letter-spacing:-.025em;margin:26px 0 42px;font-variation-settings:"opsz" 144;text-wrap:balance;}
+  h1 .hl{color:var(--accent);}
+  .lead{font-size:19px;color:var(--ink);margin:0 0 14px;}
+  .hookline{font-family:var(--serif);font-style:italic;font-size:clamp(20px,2.6vw,26px);color:var(--accent);line-height:1.3;margin:0 0 26px;}
+  /* tl;dr */
+  .tldr{background:var(--surface);border:1px solid var(--line);border-left:2px solid var(--accent);border-radius:var(--radius-md);padding:22px 26px;margin:0 0 30px;}
+  .tldr .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin:0 0 13px;display:block;}
+  .tldr ul{margin:0;padding:0;list-style:none;}
+  .tldr li{position:relative;padding-left:22px;margin:0 0 9px;font-size:15.5px;color:var(--ink);line-height:1.5;}
+  .tldr li:last-child{margin-bottom:0;}
+  .tldr li::before{content:"→";position:absolute;left:0;top:0;color:var(--accent);font-family:var(--mono);}
+  .tldr strong{font-weight:600;color:var(--headline);}
+  h2{font-family:var(--sans);font-weight:300;font-size:clamp(22px,3vw,30px);color:var(--headline);letter-spacing:-.01em;margin:0;}
+  p{margin:0 0 18px;}
+  em,.serif{font-family:var(--serif);font-style:italic;color:var(--headline);}
+  strong{font-weight:600;color:var(--headline);}
+  section{margin:0 0 16px;border-top:1px solid var(--line);}
+  .sec-head{display:flex;align-items:baseline;gap:14px;cursor:pointer;padding:36px 0 6px;user-select:none;}
+  .sec-head .num{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.14em;flex-shrink:0;text-transform:uppercase;}
+  .sec-head .chev{margin-left:auto;color:var(--ink-soft);transition:transform .3s;font-family:var(--mono);font-size:14px;}
+  section.collapsed .chev{transform:rotate(-90deg);}
+  .sec-body{overflow:hidden;transition:max-height .4s ease,opacity .3s;}
+  section.collapsed .sec-body{max-height:0 !important;opacity:0;}
+  .label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:22px 0 6px;}
+  /* data viz */
+  .figure{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md);padding:28px 30px;margin:26px 0;}
+  .figure .cap{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 22px;}
+  .figure .note{font-size:13px;color:var(--ink-soft);margin:24px 0 0;}
+  /* stages */
+  .stages{display:grid;gap:13px;margin:26px 0;}
+  .stagecard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md);padding:20px 22px;display:flex;gap:18px;align-items:flex-start;transition:.2s;}
+  .stagecard:hover{border-color:var(--accent);}
+  .stagecard .sn{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--accent);flex-shrink:0;padding-top:2px;width:28px;}
+  .stagecard .st{color:var(--headline);font-weight:500;font-size:16px;margin:0 0 5px;}
+  .stagecard .sd{font-size:14px;color:var(--ink-soft);margin:0;line-height:1.55;}
+  /* roster (frentes) */
+  .roster{display:grid;gap:13px;margin:22px 0 0;}
+  .rcard{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:18px 20px;display:flex;gap:18px;align-items:flex-start;transition:.2s;}
+  .rcard:hover{border-color:var(--accent);}
+  .rcard .rn{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--accent);flex-shrink:0;padding-top:3px;width:118px;text-transform:uppercase;}
+  .rcard .rt{color:var(--headline);font-weight:500;font-size:15.5px;margin:0 0 4px;}
+  .rcard .rd{font-size:14px;color:var(--ink-soft);margin:0;line-height:1.55;}
+  /* domain chips + collision */
+  .seals{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 8px;}
+  .seal{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px 13px;transition:.2s;}
+  .seal:hover{border-color:var(--accent);color:var(--accent);}
+  .seal b{color:var(--headline);font-weight:600;text-transform:none;letter-spacing:0;}
+  .angle{background:var(--surface);border-left:2px solid var(--accent);border-radius:var(--radius-md);padding:24px 28px;margin:24px 0 0;}
+  .angle .q{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--headline);line-height:1.4;margin:0 0 10px;}
+  .angle .src{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin:0;}
+  /* closing + cta */
+  .closing{background:var(--surface);border-left:2px solid var(--accent);border-radius:var(--radius-md);padding:26px 30px;margin:30px 0 0;}
+  .closing .big{font-family:var(--serif);font-style:italic;font-size:23px;color:var(--headline);line-height:1.35;margin:0 0 14px;}
+  .cta-row{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:26px;}
+  .dlbtn{display:inline-block;background:var(--accent);color:#0A0B0F;font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;padding:14px 24px;border-radius:var(--radius-sm);text-decoration:none;font-weight:600;transition:.2s;}
+  .dlbtn:hover{background:#c7d94a;}
+  .cta-sec{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);text-decoration:none;transition:.2s;border-bottom:1px solid var(--line);padding-bottom:3px;}
+  .cta-sec:hover{color:var(--accent);border-color:var(--accent);}
+  /* footer */
+  footer{border-top:1px solid var(--line);margin-top:40px;padding:30px 0;display:flex;align-items:center;gap:13px;}
+  .mono-mark{height:32px;width:auto;color:var(--accent);flex-shrink:0;display:block;}
+  .sig{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);}
+  .social{display:flex;gap:14px;align-items:center;margin-top:24px;}
+  .social a{color:var(--ink-soft);transition:.2s;display:inline-flex;}
+  .social a:hover{color:var(--accent);}
+  .social button.share{background:none;border:0;padding:0;margin:0;cursor:pointer;color:var(--ink-soft);transition:.2s;display:inline-flex;font:inherit;line-height:0;}
+  .social button.share:hover{color:var(--accent);}
+  .share-toast{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);opacity:0;transition:opacity .3s;align-self:center;pointer-events:none;}
+  .share-toast.show{opacity:1;}
+  @media(max-width:880px){
+    nav.toc{display:none;}
+    .wrap{padding:0 18px;}
+    body{font-size:16px;}
+    .rcard{flex-direction:column;gap:6px;}
+    .rcard .rn{width:auto;}
+    br.brk{display:none;}
+  }
+  @media(prefers-reduced-motion:reduce){*{transition:none !important;}}
+  @media print{
+    body{background:#fff;color:#111;}
+    nav.toc,#progress{display:none;}
+    section.collapsed .sec-body{max-height:none !important;opacity:1 !important;}
+    .figure,.seal,.closing,.stagecard,.angle{border-color:#ccc;background:#fff;}
+    h1,h2,strong,em{color:#111;}
+  }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+  <nav class="toc" aria-label="Índice">
+    <ol>
+      <li><a href="#abre">Abertura</a></li>
+      <li><a href="#c1">Camada 1 · O contrato</a></li>
+      <li><a href="#c2">Camada 2 · As quatro frentes</a></li>
+      <li><a href="#c3">Camada 3 · As cinco perguntas</a></li>
+      <li><a href="#c4">Camada 4 · A leitura</a></li>
+      <li><a href="#fim">Pra fechar</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <p class="kicker">oracle-diagnostic-lite · leitura de superfície</p>
+    <h1 id="abre">Onde dói de <span class="hl">verdade</span>.</h1>
+    <p class="hookline">Antes de resolver, é preciso localizar.<br class="brk"> Você gasta energia no cômodo errado enquanto o incêndio segue no outro.</p>
+    <div class="tldr">
+      <span class="lbl">TL;DR</span>
+      <ul>
+        <li><strong>O problema:</strong> algo trava, mas você não sabe nomear o quê — e mexe no Instagram quando o nó está na oferta.</li>
+        <li><strong>O mecanismo:</strong> 3–5 perguntas em ritmo de conversa, e uma leitura curta de qual das quatro frentes concentra a tensão. Uma só.</li>
+        <li><strong>O contrato:</strong> ela localiza o nó, não desata. Apontar o cômodo do incêndio é grátis; apagar o fogo é o Diagnóstico Oracle completo.</li>
+      </ul>
+    </div>
+    <p class="lead">O <strong>Creative Oracle™</strong> é o árbitro estratégico do MSCREATIVE.SYSTEMS™ que lê um negócio por quatro frentes ao mesmo tempo e diz onde a coisa está desalinhada. Esta skill é a amostra grátis dele: a primeira leitura. Aponta a frente onde a tensão se concentra — e para ali, antes do "como".</p>
+
+    <section id="c1">
+      <div class="sec-head"><span class="num">Camada 1 · O contrato</span><h2></h2><span class="chev">▾</span></div>
+      <div class="sec-body"><div style="padding-bottom:10px">
+        <h2 style="margin:0 0 18px">Localiza, não resolve</h2>
+        <p>Pense num médico que olha você por dois minutos no corredor e diz "isso é respiratório, vale investigar". Útil, honesto, e claramente não é a consulta. É exatamente esse o contrato aqui.</p>
+        <p>A skill aponta o cômodo onde está o incêndio. Apagar o fogo — a leitura cruzada das quatro frentes, qual tensão puxa as outras, em que ordem mexer — é o Diagnóstico Oracle completo. Aqui ela faz só a primeira parte: <strong>localiza a tensão</strong>.</p>
+        <p class="label">Por que parar antes do "como"</p>
+        <p>Esse limite não é mesquinhez. É o que mantém a leitura honesta: ela sinaliza, não resolve. Um plano feito sem olhar de verdade é genérico, e genérico não cola. Quem promete resolver de graça em três perguntas está mentindo — e você sente.</p>
+      </div></div>
+    </section>
+
+    <section id="c2">
+      <div class="sec-head"><span class="num">Camada 2 · As quatro frentes</span><h2></h2><span class="chev">▾</span></div>
+      <div class="sec-body"><div style="padding-bottom:10px">
+        <h2 style="margin:0 0 18px">O negócio lido por quatro frentes</h2>
+        <p>O Oracle lê qualquer negócio por quatro frentes. A leitura aponta a que concentra a tensão — uma só, a que puxa as outras. Não é um formulário: as frentes organizam a escuta, não viram checklist recitado pro usuário.</p>
+
+        <div class="figure">
+          <p class="cap">as quatro frentes</p>
+          <div class="roster">
+            <div class="rcard"><span class="rn">Posicionamento</span><div><p class="rt">Quem você é, pra quem</p><p class="rd">Clareza de posicionamento e público. Se um estranho não entende pra quem você existe numa frase, o nó pode estar aqui.</p></div></div>
+            <div class="rcard"><span class="rn">Presença</span><div><p class="rt">Como você soa e aparece</p><p class="rd">Voz, estética, presença. O que você mostra na primeira impressão bate com quem você de fato é — ou há descompasso?</p></div></div>
+            <div class="rcard"><span class="rn">Conversão</span><div><p class="rt">Por que compram de você</p><p class="rd">Oferta, persuasão, conversão. As pessoas certas chegam e mesmo assim não compram, não agem, não respondem.</p></div></div>
+            <div class="rcard"><span class="rn">Operação</span><div><p class="rt">Como você entrega e sustenta</p><p class="rd">Operação, monetização, dependência de você. Se você sumisse 30 dias, o negócio andava — ou tudo trava na sua sala?</p></div></div>
+          </div>
+          <p class="note">A leitura nomeia uma frente. A leitura cruzada — como uma puxa as outras — é o diagnóstico completo.</p>
+        </div>
+      </div></div>
+    </section>
+
+    <section id="c3">
+      <div class="sec-head"><span class="num">Camada 3 · As cinco perguntas</span><h2></h2><span class="chev">▾</span></div>
+      <div class="sec-body"><div style="padding-bottom:10px">
+        <h2 style="margin:0 0 18px">O roteiro, em ritmo de conversa</h2>
+        <p>As perguntas vêm uma de cada vez, calibradas ao seu contexto — não como questionário despejado de uma vez. Cinco é o teto. Se a tensão já aparece nas primeiras, a leitura começa antes. O objetivo é que você se sinta visto, não interrogado.</p>
+        <div class="stages">
+          <div class="stagecard"><span class="sn">01</span><div><p class="st">Posicionamento</p><p class="sd">"Se um estranho perguntasse pra quem você existe e por que escolher você e não outro, você responde numa frase — sem pausar?"</p></div></div>
+          <div class="stagecard"><span class="sn">02</span><div><p class="st">Presença</p><p class="sd">"Quando alguém te encontra pela primeira vez, o que você mostra bate com quem você de fato é? Onde sente descompasso?"</p></div></div>
+          <div class="stagecard"><span class="sn">03</span><div><p class="st">Conversão</p><p class="sd">"As pessoas certas chegam até você e mesmo assim não compram, não agem, não respondem. Com que frequência isso acontece?"</p></div></div>
+          <div class="stagecard"><span class="sn">04</span><div><p class="st">Operação</p><p class="sd">"Se você sumisse 30 dias, o negócio andava? Ou tudo que importa depende de você estar na sala?"</p></div></div>
+          <div class="stagecard"><span class="sn">05</span><div><p class="st">A dor-mestra</p><p class="sd">"De tudo isso, o que dói mais agora?" — a pergunta que deixa você apontar onde a tensão é mais aguda.</p></div></div>
+        </div>
+      </div></div>
+    </section>
+
+    <section id="c4">
+      <div class="sec-head"><span class="num">Camada 4 · A leitura</span><h2></h2><span class="chev">▾</span></div>
+      <div class="sec-body"><div style="padding-bottom:10px">
+        <h2 style="margin:0 0 18px">Três a cinco frases, não um relatório</h2>
+        <p>Depois das respostas, a leitura faz três coisas: <strong>espelha</strong> nas suas palavras o que ouviu, <strong>localiza</strong> a frente onde a tensão se concentra, e <strong>para</strong> antes do "como".</p>
+        <p class="label">Um exemplo de leitura</p>
+        <div class="angle">
+          <p class="q">"Pelo que você trouxe: o tráfego chega, mas trava na hora de comprar — e você mesmo disse que titubeia na frase de 'pra quem eu existo'. Isso aponta pra uma só coisa: o nó está em <strong>por que compram de você</strong>. Onde isso vem de — a oferta, o público errado, ou a voz — é o que a leitura completa separa."</p>
+          <p class="src">Espelha as palavras · nomeia uma frente · para na fronteira do diagnóstico</p>
+        </div>
+        <p class="label" style="margin-top:26px">O que a leitura faz e não faz</p>
+        <div class="seals">
+          <span class="seal"><b>Espelha</b> &nbsp;devolve nas suas palavras — você se sente ouvido</span>
+          <span class="seal"><b>Localiza</b> &nbsp;uma frente só, a que puxa as outras</span>
+          <span class="seal"><b>Para</b> &nbsp;não diz como arrumar a oferta</span>
+        </div>
+        <p style="margin-top:22px">A leitura é deliberadamente rasa. Ela existe pra provar que o método enxerga — não pra entregar o método.</p>
+      </div></div>
+    </section>
+
+    <section id="fim">
+      <div class="sec-head"><span class="num">Pra fechar</span><h2></h2><span class="chev">▾</span></div>
+      <div class="sec-body"><div style="padding-bottom:10px">
+        <div class="closing">
+          <p class="big">Localizar o nó é grátis.<br class="brk"> Desatar é o próximo trabalho.</p>
+          <p style="margin:0">Esta é a leitura de superfície: onde está o nó. Desatar exige olhar as quatro frentes cruzadas ao mesmo tempo — qual tensão puxa as outras, em que ordem mexer, o que destravar primeiro. Esse é o <strong>Diagnóstico Oracle completo</strong>. A skill conduz você até a porta; não força a venda. Uma skill do Claude, um arquivo markdown. Sem servidor, sem dependência.</p>
+        </div>
+        <div class="cta-row">
+          <a class="dlbtn" href="https://github.com/1marcelserrano/oracle-diagnostic-lite" target="_blank" rel="noopener">Ver no GitHub →</a>
+          <a class="cta-sec" href="https://fronteirista.substack.com" target="_blank" rel="noopener">Fronteirista · newsletter</a>
+        </div>
+        <p class="serif" style="margin-top:26px">Marcel</p>
+      </div></div>
+    </section>
+
+    <div class="social">
+      <a href="https://www.instagram.com/mscreative.systems" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></svg></a>
+      <a href="https://www.linkedin.com/in/marcelserrano/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.2 8h4.6v13H.2V8zm7.4 0h4.4v1.8h.06c.6-1.1 2.06-2.26 4.24-2.26 4.54 0 5.38 2.86 5.38 6.58V21h-4.6v-5.9c0-1.4-.02-3.2-1.96-3.2-1.96 0-2.26 1.52-2.26 3.1V21H7.6V8z"/></svg></a>
+      <a href="https://fronteirista.substack.com" target="_blank" rel="noopener" aria-label="Substack"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/></svg></a>
+      <button type="button" class="share" aria-label="Compartilhar"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
+      <span class="share-toast" aria-live="polite">link copiado</span>
+    </div>
+    <footer><svg class="mono-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 67.19667 51.75458" role="img" aria-label="Monograma MSCREATIVE.SYSTEMS"><path fill="currentColor" d="M8.15479,17.66986c-.10727,4.76875.03115,9.5285.41527,14.27922.25365,3.1651,1.03955,6.29608,1.74645,9.47888C12.17932,49.84272-.28837,51.03399.0051,42.2846c.35921-10.7694,2.02753-21.07894,5.00492-30.92856.43105-1.41773,1.65413-3.47677,3.2464-2.21435.53746.42306.92911.9969,1.17496,1.72154l5.78538,16.91602c.23584.68769.41046.67353.52387-.04254,1.02383-6.35386,2.74577-12.56867,5.16579-18.64433,2.42341-6.08573,7.57839-4.14271,9.40284.91599,2.77922,7.71993,3.71882,15.26481,4.54493,24.0988.01976.18583.11541.20673.28695.06271,5.16382-4.20649,10.48613-8.20113,15.96693-11.98388.2477-.17071.22158-.25977-.07835-.26709-3.61598-.09368-7.23981-.18066-10.87148-.26095-7.39821-.16475-4.36055-6.1619-1.09576-9.14847,3.1263-2.86316,6.25148-5.72857,9.37556-8.59623,1.40786-1.29146,2.61261-3.41267,5.0914-3.82386,5.89972-.9766,7.89921,6.29685,3.23346,9.68677-3.83797,2.79228-7.80539,5.39743-11.90226,7.81541-.15464.09367-.14189.15021.03827.16962,3.88277.43335,7.73249.3423,11.54916-.27318,2.22015-.35804,3.71273-2.03541,5.76647-2.29809,3.64903-.46082,6.04224,3.15361,4.51287,6.37544-.40245.85424-1.13742,1.76487-2.20492,2.73191-9.11467,8.26941-20.20634,14.6041-28.33323,22.56665-1.08504,1.06379-2.30373,3.42673-3.57933,4.09058-4.6234,2.39615-8.52986-.9142-8.76183-5.62878-.18359-3.7576-1.48526-26.94142-1.86815-26.88513-.09989.01549-.20829.14727-.27434.33352-1.46726,4.3048-2.51335,8.71175-3.13827,13.2209-.12499.90632-.43616,1.72773-.9335,2.46426-1.56103,2.29841-3.54903-.8048-4.06681-2.08179-2.07112-5.11908-3.79413-9.98508-5.16903-14.59797-.02544-.08589-.07445-.14821-.12558-.15976l-.05874-.0085c-.02576-.00602-.05156.01476-.05761.04636-.00077.00405-.00119.00814-.00126.01226l-.00003-.00003Z"/></svg><span class="sig">MSCREATIVE.SYSTEMS&trade;</span></footer>
+  </main>
+</div>
+
+<script>
+(function(){
+  var prog=document.getElementById('progress');
+  function onScroll(){var h=document.documentElement.scrollHeight-window.innerHeight;prog.style.width=(h>0?(window.scrollY/h*100):0)+'%';}
+  window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+  document.querySelectorAll('.sec-head').forEach(function(h){
+    var body=h.nextElementSibling;
+    body.style.maxHeight=body.scrollHeight+'px';
+    h.addEventListener('click',function(){
+      var sec=h.parentElement;sec.classList.toggle('collapsed');
+      if(!sec.classList.contains('collapsed')){body.style.maxHeight=body.scrollHeight+'px';}
+    });
+  });
+  function recalc(){document.querySelectorAll('section:not(.collapsed) .sec-body').forEach(function(b){b.style.maxHeight=b.scrollHeight+'px';});}
+  window.addEventListener('resize',recalc);
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(recalc);}
+  window.addEventListener('load',recalc);
+
+  var links=document.querySelectorAll('nav.toc a');
+  var map={};links.forEach(function(a){map[a.getAttribute('href').slice(1)]=a;});
+  var spy=new IntersectionObserver(function(es){
+    es.forEach(function(e){if(e.isIntersecting){links.forEach(function(a){a.classList.remove('active');});var id=e.target.id;if(map[id])map[id].classList.add('active');}});
+  },{rootMargin:'-30% 0px -60% 0px'});
+  document.querySelectorAll('main section,#abre').forEach(function(s){if(s.id)spy.observe(s);});
+
+  var shareBtn=document.querySelector('.social button.share');
+  if(shareBtn){
+    var toast=document.querySelector('.share-toast');
+    function showToast(){if(toast){toast.classList.add('show');setTimeout(function(){toast.classList.remove('show');},1800);}}
+    function legacyCopy(){try{var ta=document.createElement('textarea');ta.value=location.href;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast();}catch(e){}}
+    shareBtn.addEventListener('click',function(){
+      var data={title:document.title,text:'oracle-diagnostic-lite — onde o seu negócio trava de verdade',url:location.href};
+      if(navigator.share){navigator.share(data).catch(function(){});return;}
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(location.href).then(showToast).catch(legacyCopy);
+      }else{legacyCopy();}
+    });
+  }
+})();
+</script>
+</body>
+</html>
